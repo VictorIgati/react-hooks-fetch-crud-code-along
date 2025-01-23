@@ -1,16 +1,36 @@
 import React, { useState } from "react";
 
-function ItemForm() {
+function ItemForm({ onAddItem }) {
   const [name, setName] = useState("");
   const [category, setCategory] = useState("Produce");
 
+  // Handle form submission
+  function handleSubmit(event) {
+    event.preventDefault();
+    const itemData = {
+      name: name,
+      category: category,
+      isInCart: false,
+    };
+
+    // POST request to add a new item
+    fetch("http://localhost:4000/items", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(itemData),
+    })
+      .then((response) => response.json())
+      .then((newItem) => onAddItem(newItem));
+  }
+
   return (
-    <form className="NewItem">
+    <form className="NewItem" onSubmit={handleSubmit}>
       <label>
         Name:
         <input
           type="text"
-          name="name"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
@@ -19,7 +39,6 @@ function ItemForm() {
       <label>
         Category:
         <select
-          name="category"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
         >
